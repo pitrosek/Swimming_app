@@ -84,4 +84,4 @@ Tato aplikace je vytvářena jako závěrečný školní projekt.
 - statistiky výkonů plavců  
 - docházka na tréninky  
 - notifikace  
-- chat mezi tren
+- chat mezi trenérem a plavcem

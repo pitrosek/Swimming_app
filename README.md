@@ -86,4 +86,4 @@ Tato aplikace je vytvářena jako závěrečný školní projekt.
 - notifikace  
 - chat mezi trenérem a plavcem
 
-## V momentalním stavu zatím jedná pouze o prototyp ❗❗❗
+## V momentalním stavu se zatím jedná pouze o prototyp ❗❗❗

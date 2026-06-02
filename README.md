@@ -1,4 +1,4 @@
-# 🏊‍♂️ Swim Training App
+# 🏊‍♂️ SwimPace
 
 Aplikace určená pro plavce (závodníky) a trenéry, která zjednodušuje organizaci tréninků a závodů.
 

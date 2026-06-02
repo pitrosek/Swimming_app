@@ -85,3 +85,5 @@ Tato aplikace je vytvářena jako závěrečný školní projekt.
 - docházka na tréninky  
 - notifikace  
 - chat mezi trenérem a plavcem
+
+## Momentalní stav je zatím pouze prototyp!

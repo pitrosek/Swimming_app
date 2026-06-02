@@ -79,6 +79,9 @@ Tato aplikace je vytvářena jako závěrečný školní projekt.
 
 ---
 
+## 🤖 Technologie
+- Django
+
 ## 🚀 Budoucí rozšíření (možnosti)
 
 - statistiky výkonů plavců  

@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ plavec.jmeno }} {{ plavec.prijmeni }} - Plavecké Závody{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb with Button Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-house"></i> Domů
+            </a>
+            <span style="color: #666;">/</span>
+            <a href="{% url 'plavci_list' %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-people"></i> Plavci
+            </a>
+            <span style="color: #666;">/</span>
+            <span style="padding: 0.5rem 0.75rem; color: #0066cc; font-weight: 600;">{{ plavec.jmeno }} {{ plavec.prijmeni }}</span>
+        </div>
+        <button onclick="history.back()" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
+            <i class="bi bi-arrow-left"></i> Zpět
+        </button>
+    </nav>
+
+    <!-- Detail Header -->
+    <div class="detail-header">
+        <h1><i class="bi bi-person-badge"></i> {{ plavec.jmeno }} {{ plavec.prijmeni }}</h1>
+        <p class="mb-0">Profil plavce</p>
+    </div>
+
+    <!-- Main Information -->
+    <div class="row mb-5">
+        <!-- Personal Info -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-info-circle"></i> Osobní Informace
+                </div>
+                <div class="card-body">
+                    <div class="info-box mb-2">
+                        <strong><i class="bi bi-calendar"></i> Rok narození:</strong><br>
+                        {{ plavec.rocnik }}
+                    </div>
+                    <div class="info-box mb-2">
+                        <strong><i class="bi bi-person"></i> Pohlaví:</strong><br>
+                        {% if plavec.pohlavi == 'M' %}
+                            <span class="badge bg-primary"><i class="bi bi-person"></i> Muž</span>
+                        {% else %}
+                            <span class="badge bg-danger"><i class="bi bi-person"></i> Žena</span>
+                        {% endif %}
+                    </div>
+                    {% if plavec.vaha %}
+                        <div class="info-box mb-2">
+                            <strong><i class="bi bi-arrow-repeat"></i> Váha:</strong><br>
+                            {{ plavec.vaha }} kg
+                        </div>
+                    {% endif %}
+                    {% if plavec.vyska %}
+                        <div class="info-box mb-2">
+                            <strong><i class="bi bi-arrow-up-down"></i> Výška:</strong><br>
+                            {{ plavec.vyska }} cm
+                        </div>
+                    {% endif %}
+                    {% if plavec.klub %}
+                        <div class="info-box mb-2">
+                            <strong><i class="bi bi-building"></i> Klub:</strong><br>
+                            <a href="{% url 'klub_detail' plavec.klub.klub_id %}" style="text-decoration: none;">
+                                <strong>{{ plavec.klub.nazev }}</strong>
+                            </a>
+                        </div>
+                    {% endif %}
+                    {% if plavec.stat %}
+                        <div class="info-box">
+                            <strong><i class="bi bi-globe"></i> Stát:</strong><br>
+                            <a href="{% url 'stat_detail' plavec.stat.stat_id %}" style="text-decoration: none;">
+                                <strong>{{ plavec.stat.nazev }}</strong>
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-bar-chart"></i> Statistika
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-4">
+                            <div class="number" style="color: var(--primary-color);">
+                                {{ vysledky|length }}
+                            </div>
+                            <div class="label">
+                                <i class="bi bi-trophy"></i> Výsledků
+                            </div>
+                        </div>
+                        <div class="col-6 mb-4">
+                            <div class="number" style="color: var(--secondary-color);">
+                                {{ treneri|length }}
+                            </div>
+                            <div class="label">
+                                <i class="bi bi-person-lines-fill"></i> Trenérů
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trenéři -->
+    {% if treneri %}
+        <div class="card mb-5">
+            <div class="card-header">
+                <i class="bi bi-person-lines-fill"></i> Trenéři
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for trener in treneri %}
+                        <div class="col-md-6 mb-3">
+                            <div class="info-box">
+                                <strong><i class="bi bi-person"></i> {{ trener.jmeno }} {{ trener.prijmeni }}</strong><br>
+                                <small class="text-muted">
+                                    {% if trener.klub %}
+                                        Klub: <a href="{% url 'klub_detail' trener.klub.klub_id %}">{{ trener.klub.nazev }}</a>
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Výsledky -->
+    {% if vysledky %}
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-trophy"></i> Výsledky Závodu
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="bi bi-calendar"></i> Závod</th>
+                                <th><i class="bi bi-list-check"></i> Disciplína</th>
+                                <th><i class="bi bi-clock"></i> Čas</th>
+                                <th><i class="bi bi-trophy"></i> Umístění</th>
+                                <th><i class="bi bi-star"></i> Body</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vysledek in vysledky %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'zavod_detail' vysledek.zavod.zavod_id %}" style="text-decoration: none;">
+                                            <strong>{{ vysledek.zavod.nazev }}</strong>
+                                        </a>
+                                    </td>
+                                    <td>{{ vysledek.disciplina.nazev }}</td>
+                                    <td>
+                                        {% if vysledek.cas %}
+                                            <code style="background: #f0f0f0; padding: 2px 5px; border-radius: 3px; font-size: 12px;">
+                                                {{ vysledek.cas }} s
+                                            </code>
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if vysledek.umisteni == 1 %}
+                                            <span class="medal-badge first">1.</span>
+                                        {% elif vysledek.umisteni == 2 %}
+                                            <span class="medal-badge second">2.</span>
+                                        {% elif vysledek.umisteni == 3 %}
+                                            <span class="medal-badge third">3.</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ vysledek.umisteni }}.</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if vysledek.body %}
+                                            <strong>{{ vysledek.body }} b.</strong>
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle"></i> Zatím nejsou k dispozici žádné výsledky.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

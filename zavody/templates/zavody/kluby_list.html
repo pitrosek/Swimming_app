@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Kluby - Plavecké Závody{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb with Button Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4" style="display: flex; gap: 0.5rem; align-items: center;">
+        <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-house"></i> Domů
+        </a>
+        <span style="color: #666;">/</span>
+        <span style="padding: 0.5rem 0.75rem; color: #0066cc; font-weight: 600;">Kluby</span>
+    </nav>
+
+    <h1 class="mb-4" style="color: var(--primary-color);">
+        <i class="bi bi-building"></i> Plavecké Kluby
+    </h1>
+
+    <!-- Search Box -->
+    <div class="search-box">
+        <form method="get" class="row g-3">
+            <div class="col-md-10">
+                <input type="text" name="q" class="form-control" placeholder="Vyhledejte klub podle názvu nebo místa..." value="{{ query }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Hledat
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Kluby List -->
+    {% if kluby %}
+        <div class="row">
+            {% for klub in kluby %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="bi bi-building"></i> {{ klub.nazev }}
+                        </div>
+                        <div class="card-body">
+                            <div class="info-box mb-2">
+                                <strong><i class="bi bi-geo-alt"></i> Město:</strong><br>
+                                {% if klub.mesto %}
+                                    <a href="{% url 'stat_detail' klub.mesto.stat.stat_id %}" style="text-decoration: none;">
+                                        {{ klub.mesto.nazev }}, {{ klub.mesto.stat.nazev }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </div>
+                            {% if klub.datum_zalozeni %}
+                                <div class="info-box mb-2">
+                                    <strong><i class="bi bi-calendar"></i> Založen:</strong><br>
+                                    {{ klub.datum_zalozeni|date:"Y" }}
+                                </div>
+                            {% endif %}
+                            <div class="info-box">
+                                <strong><i class="bi bi-person"></i> Plavci:</strong><br>
+                                <span class="badge bg-info">
+                                    {{ klub.plavec_set.count }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="{% url 'klub_detail' klub.klub_id %}" class="btn btn-primary w-100">
+                                <i class="bi bi-arrow-right"></i> Detail Klubu
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-results">
+            <i class="bi bi-search"></i>
+            <h4>Žádné kluby nenalezeny</h4>
+            <p>Zkuste změnit vyhledávací kritéria.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

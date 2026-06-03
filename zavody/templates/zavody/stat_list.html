@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Státy - Plavecké Závody{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb with Button Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4" style="display: flex; gap: 0.5rem; align-items: center;">
+        <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-house"></i> Domů
+        </a>
+        <span style="color: #666;">/</span>
+        <span style="padding: 0.5rem 0.75rem; color: #0066cc; font-weight: 600;">Státy</span>
+    </nav>
+
+    <h1 class="mb-4" style="color: var(--primary-color);">
+        <i class="bi bi-globe"></i> Státy a Reprezentanti
+    </h1>
+
+    <!-- Státy List -->
+    {% if stavy %}
+        <div class="row">
+            {% for stat in stavy %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="bi bi-flag"></i> {{ stat.nazev }}
+                        </div>
+                        <div class="card-body">
+                            <div class="info-box mb-2">
+                                <strong><i class="bi bi-code"></i> Kód:</strong><br>
+                                <span class="badge bg-info">{{ stat.nazev }}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong><i class="bi bi-people"></i> Plavci:</strong><br>
+                                {% with stat.plavec_set.count as count %}
+                                    <span class="badge bg-primary">{{ count }}</span>
+                                {% endwith %}
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="{% url 'stat_detail' stat.stat_id %}" class="btn btn-primary w-100">
+                                <i class="bi bi-arrow-right"></i> Detail Státu
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-results">
+            <i class="bi bi-globe"></i>
+            <h4>Žádné státy nenalezeny</h4>
+            <p>V databázi nejsou zatím žádné státy.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

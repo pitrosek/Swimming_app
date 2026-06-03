@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Závody - Plavecké Závody{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb with Button Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4" style="display: flex; gap: 0.5rem; align-items: center;">
+        <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-house"></i> Domů
+        </a>
+        <span style="color: #666;">/</span>
+        <span style="padding: 0.5rem 0.75rem; color: #0066cc; font-weight: 600;">Závody</span>
+    </nav>
+
+    <h1 class="mb-4" style="color: var(--primary-color);">
+        <i class="bi bi-calendar-event"></i> Všechny Závody
+    </h1>
+
+    <!-- Search Box -->
+    <div class="search-box">
+        <form method="get" class="row g-3">
+            <div class="col-md-10">
+                <input type="text" name="q" class="form-control" placeholder="Vyhledejte závod podle názvu nebo místa..." value="{{ query }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Hledat
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Competitions List -->
+    
+    <!-- Nadcházející závody -->
+    <div class="mb-5">
+        <h2 style="color: var(--primary-color); border-bottom: 3px solid var(--primary-color); padding-bottom: 10px;">
+            <i class="bi bi-calendar-plus"></i> Nadcházející závody
+        </h2>
+        {% if nadchazejici %}
+            <div class="row">
+                {% for zavod in nadchazejici %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+                                <i class="bi bi-flag"></i> {{ zavod.nazev }}
+                            </div>
+                            <div class="card-body">
+                                <div class="info-box mb-2">
+                                    <strong><i class="bi bi-calendar"></i> Datum:</strong><br>
+                                    {% if zavod.datum %}
+                                        {{ zavod.datum|date:"d.m.Y" }}
+                                    {% else %}
+                                        <span class="badge bg-warning">Neuvedeno</span>
+                                    {% endif %}
+                                </div>
+                                <div class="info-box mb-2">
+                                    <strong><i class="bi bi-clock"></i> Čas zahájení:</strong><br>
+                                    {% if zavod.cas_zahajeni %}
+                                        {{ zavod.cas_zahajeni|time:"H:i" }}
+                                    {% else %}
+                                        <span class="badge bg-warning">Neuvedeno</span>
+                                    {% endif %}
+                                </div>
+                                <div class="info-box mb-2">
+                                    <strong><i class="bi bi-geo-alt"></i> Místo:</strong><br>
+                                    {{ zavod.misto }}
+                                </div>
+                                <div class="info-box">
+                                    <strong><i class="bi bi-water"></i> Bazén:</strong><br>
+                                    <span class="badge bg-info">{{ zavod.get_bazen_display }}</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white border-top-0">
+                                <a href="{% url 'zavod_detail' zavod.zavod_id %}" class="btn btn-primary w-100">
+                                    <i class="bi bi-arrow-right"></i> Více informací
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-results">
+                <i class="bi bi-info-circle"></i>
+                <h5>Žádné nadcházející závody</h5>
+                <p>V tuto chvíli není naplánován žádný závod.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Proběhlé závody -->
+    <div class="mb-5">
+        <h2 style="color: var(--primary-color); border-bottom: 3px solid var(--primary-color); padding-bottom: 10px;">
+            <i class="bi bi-calendar-check"></i> Proběhlé závody
+        </h2>
+        {% if probehlé %}
+            <div class="row">
+                {% for zavod in probehlé %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100" style="opacity: 0.95;">
+                            <div class="card-header" style="background: #6c757d;">
+                                <i class="bi bi-flag"></i> {{ zavod.nazev }}
+                            </div>
+                            <div class="card-body">
+                                <div class="info-box mb-2">
+                                    <strong><i class="bi bi-calendar"></i> Datum:</strong><br>
+                                    {% if zavod.datum %}
+                                        {{ zavod.datum|date:"d.m.Y" }}
+                                    {% else %}
+                                        <span class="badge bg-warning">Neuvedeno</span>
+                                    {% endif %}
+                                </div>
+                                <div class="info-box mb-2">
+                                    <strong><i class="bi bi-clock"></i> Čas zahájení:</strong><br>
+                                    {% if zavod.cas_zahajeni %}
+                                        {{ zavod.cas_zahajeni|time:"H:i" }}
+                                    {% else %}
+                                        <span class="badge bg-warning">Neuvedeno</span>
+                                    {% endif %}
+                                </div>
+                                <div class="info-box mb-2">
+                                    <strong><i class="bi bi-geo-alt"></i> Místo:</strong><br>
+                                    {{ zavod.misto }}
+                                </div>
+                                <div class="info-box">
+                                    <strong><i class="bi bi-water"></i> Bazén:</strong><br>
+                                    <span class="badge bg-info">{{ zavod.get_bazen_display }}</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white border-top-0">
+                                <a href="{% url 'zavod_detail' zavod.zavod_id %}" class="btn btn-secondary w-100">
+                                    <i class="bi bi-arrow-right"></i> Zobrazit výsledky
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-results">
+                <i class="bi bi-info-circle"></i>
+                <h5>Žádné proběhlé závody</h5>
+                <p>Zatím se nekonaly žádné závody.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

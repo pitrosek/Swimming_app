@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Domů - Plavecké Závody{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <h1><i class="bi bi-water"></i> Vítejte na portálu Plaveckých Závodů</h1>
+        <p>Kompletní informace o závodech, plavcích, klubech a výsledcích</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Statistics Section -->
+    <div class="row mb-5">
+        <div class="col-md-3 mb-4">
+            <a href="{% url 'zavody_list' %}" style="text-decoration: none; color: inherit;">
+                <div class="stats-card">
+                    <div class="number">{{ zavody_count }}</div>
+                    <div class="label">
+                        <i class="bi bi-calendar-event"></i> Závodů
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 mb-4">
+            <a href="{% url 'plavci_list' %}" style="text-decoration: none; color: inherit;">
+                <div class="stats-card">
+                    <div class="number">{{ plavci_count }}</div>
+                    <div class="label">
+                        <i class="bi bi-people"></i> Plavců
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 mb-4">
+            <a href="{% url 'kluby_list' %}" style="text-decoration: none; color: inherit;">
+                <div class="stats-card">
+                    <div class="number">{{ kluby_count }}</div>
+                    <div class="label">
+                        <i class="bi bi-building"></i> Klubů
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 mb-4">
+            <a href="{% url 'stat_list' %}" style="text-decoration: none; color: inherit;">
+                <div class="stats-card">
+                    <div class="number">{{ stavy_count }}</div>
+                    <div class="label">
+                        <i class="bi bi-globe"></i> Států
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Features -->
+    <div class="row mb-5">
+        <h2 class="text-center mb-4" style="color: var(--primary-color);">
+            <i class="bi bi-lightning"></i> Rychlý Přístup
+        </h2>
+        <div class="col-md-3 mb-4">
+            <div class="icon-box">
+                <i class="bi bi-calendar-check"></i>
+                <h5>Nadcházející Závody</h5>
+                <p class="small text-muted">Podívejte se na připravované závody</p>
+                <a href="{% url 'zavody_list' %}" class="btn btn-sm btn-primary">Zobrazit</a>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="icon-box">
+                <i class="bi bi-person-badge"></i>
+                <h5>Profily Plavců</h5>
+                <p class="small text-muted">Informace o plaveckých talentů</p>
+                <a href="{% url 'plavci_list' %}" class="btn btn-sm btn-primary">Zobrazit</a>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="icon-box">
+                <i class="bi bi-diagram-3"></i>
+                <h5>Plavecké Kluby</h5>
+                <p class="small text-muted">Seznamte se s kluby a jejich členy</p>
+                <a href="{% url 'kluby_list' %}" class="btn btn-sm btn-primary">Zobrazit</a>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="icon-box">
+                <i class="bi bi-globe"></i>
+                <h5>Mezinárodní</h5>
+                <p class="small text-muted">Reprezentanti z různých zemí</p>
+                <a href="{% url 'stat_list' %}" class="btn btn-sm btn-primary">Zobrazit</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Competitions -->
+    <div class="row mb-5">
+        <h2 class="text-center mb-4" style="color: var(--primary-color);">
+            <i class="bi bi-clock-history"></i> Nedávné Závody
+        </h2>
+        {% if zavody %}
+            {% for zavod in zavody %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="bi bi-flag"></i> {{ zavod.nazev }}
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                <strong><i class="bi bi-calendar"></i> Datum:</strong>
+                                {% if zavod.datum %}
+                                    {{ zavod.datum|date:"d.m.Y" }}
+                                {% else %}
+                                    <span class="badge bg-warning">Neuvedeno</span>
+                                {% endif %}
+                            </p>
+                            <p>
+                                <strong><i class="bi bi-clock"></i> Čas:</strong>
+                                {% if zavod.cas_zahajeni %}
+                                    {{ zavod.cas_zahajeni|time:"H:i" }}
+                                {% else %}
+                                    <span class="badge bg-warning">Neuvedeno</span>
+                                {% endif %}
+                            </p>
+                            <p>
+                                <strong><i class="bi bi-geo-alt"></i> Místo:</strong>
+                                {{ zavod.misto }}
+                            </p>
+                            <p>
+                                <strong><i class="bi bi-water"></i> Bazén:</strong>
+                                <span class="badge bg-info">{{ zavod.get_bazen_display }}</span>
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="{% url 'zavod_detail' zavod.zavod_id %}" class="btn btn-primary btn-sm w-100">
+                                <i class="bi bi-arrow-right"></i> Více informací
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle"></i> Zatím nejsou k dispozici žádné závody.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

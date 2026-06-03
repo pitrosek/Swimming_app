@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Moji Svěřenci - Plavecké Závody{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb with Button Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-house"></i> Domů
+            </a>
+            <span style="color: #666;">/</span>
+            <a href="{% url 'profile' %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-person"></i> Profil
+            </a>
+            <span style="color: #666;">/</span>
+            <span style="padding: 0.5rem 0.75rem; color: #0066cc; font-weight: 600;">Moji Svěřenci</span>
+        </div>
+        <button onclick="history.back()" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
+            <i class="bi bi-arrow-left"></i> Zpět
+        </button>
+    </nav>
+
+    <!-- Detail Header -->
+    <div class="detail-header">
+        <h1><i class="bi bi-person-lines-fill"></i> Správa Svěřenců</h1>
+        <p class="mb-0">Trenér: <strong>{{ trener.jmeno }} {{ trener.prijmeni }}</strong></p>
+    </div>
+
+    <div class="row mt-5">
+        <!-- Aktuální svěřenci -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-people"></i> Moji Svěřenci ({{ soucasni_plavci|length }})
+                </div>
+                <div class="card-body">
+                    {% if soucasni_plavci %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Jméno</th>
+                                        <th>Klub</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for plavec in soucasni_plavci %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'plavec_detail' plavec.plavec_id %}" style="text-decoration: none;">
+                                                    <strong>{{ plavec.jmeno }} {{ plavec.prijmeni }}</strong>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {% if plavec.klub %}
+                                                    {{ plavec.klub.nazev }}
+                                                {% else %}
+                                                    <span class="text-muted">—</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle"></i> Zatím nemáte žádné svěřence.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Přidání nového svěřence -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-person-plus"></i> Přidat Nového Svěřence
+                </div>
+                <div class="card-body">
+                    {% if visi_plavci %}
+                        <form method="post" class="mb-3">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="plavec_id" class="form-label">
+                                    <i class="bi bi-person"></i> Vyberte plavce
+                                </label>
+                                <select name="plavec_id" id="plavec_id" class="form-select" required>
+                                    <option value="">--- Zvolte plavce ---</option>
+                                    {% for plavec in visi_plavci %}
+                                        <option value="{{ plavec.plavec_id }}">
+                                            {{ plavec.jmeno }} {{ plavec.prijmeni }} 
+                                            {% if plavec.klub %}({{ plavec.klub.nazev }}){% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-check-circle"></i> Přidat Svěřence
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle"></i> Všichni dostupní plavci jsou již ve vašem seznamu nebo nejsou k dispozici.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <a href="{% url 'trener_detail' trener.trener_id %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Zpět na profil
+            </a>
+            <a href="{% url 'zapsat_plavce_na_zavod' %}" class="btn btn-success">
+                <i class="bi bi-pencil-square"></i> Zapsat na Závody
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

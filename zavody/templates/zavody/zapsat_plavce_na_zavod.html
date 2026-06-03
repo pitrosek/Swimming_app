@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Zápis na Závody - Plavecké Závody{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb with Button Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-house"></i> Domů
+            </a>
+            <span style="color: #666;">/</span>
+            <a href="{% url 'profile' %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-person"></i> Profil
+            </a>
+            <span style="color: #666;">/</span>
+            <span style="padding: 0.5rem 0.75rem; color: #0066cc; font-weight: 600;">Zápis Plavců na Závody</span>
+        </div>
+        <button onclick="history.back()" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
+            <i class="bi bi-arrow-left"></i> Zpět
+        </button>
+    </nav>
+
+    <!-- Detail Header -->
+    <div class="detail-header">
+        <h1><i class="bi bi-pencil-square"></i> Zápis Plavců na Závody</h1>
+        <p class="mb-0">Trenér: <strong>{{ trener.jmeno }} {{ trener.prijmeni }}</strong></p>
+    </div>
+
+    {% if budouci_zavody %}
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check"></i> Vyberte závod a plavce
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Výběr závodu -->
+                    <div class="mb-4">
+                        <label for="zavod_id" class="form-label">
+                            <i class="bi bi-flag"></i> Vyberte závod
+                        </label>
+                        <select name="zavod_id" id="zavod_id" class="form-select" required>
+                            <option value="">--- Zvolte závod ---</option>
+                            {% for zavod in budouci_zavody %}
+                                <option value="{{ zavod.zavod_id }}">
+                                    {{ zavod.nazev }} - {{ zavod.datum|date:"d.m.Y" }} ({{ zavod.misto }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Výběr disciplin -->
+                    <div class="mb-4" id="discipliny_container" style="display: none;">
+                        <label class="form-label">
+                            <i class="bi bi-shuffle"></i> Vyberte discipliny
+                        </label>
+                        <div class="alert alert-info" role="alert">
+                            <small>Vyberte discipliny, ve kterých budou plavci startovat.</small>
+                        </div>
+                        <div id="discipliny_list" class="row"></div>
+                    </div>
+
+                    <!-- Výběr plavců -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="bi bi-people"></i> Vyberte své plavce
+                        </label>
+                        <div class="alert alert-info" role="alert">
+                            <small>Vyberte plavce, kterého chcete zapsat na zvolený závod.</small>
+                        </div>
+                        
+                        {% if soucasni_plavci %}
+                            <div class="row">
+                                {% for plavec in soucasni_plavci %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check card p-3" style="border: 1px solid var(--primary-color);">
+                                            <input class="form-check-input" type="checkbox" name="plavci" 
+                                                   value="{{ plavec.plavec_id }}" id="plavec_{{ plavec.plavec_id }}">
+                                            <label class="form-check-label w-100" for="plavec_{{ plavec.plavec_id }}">
+                                                <strong>{{ plavec.jmeno }} {{ plavec.prijmeni }}</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    {% if plavec.klub %}Klub: {{ plavec.klub.nazev }}{% endif %}
+                                                    {% if plavec.rocnik %} | Ročník: {{ plavec.rocnik }}{% endif %}
+                                                </small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning" role="alert">
+                                <i class="bi bi-exclamation-triangle"></i> Nemáte žádné svěřence. 
+                                <a href="{% url 'add_sverenek' %}">Přidejte plavce</a> před tím, než je zapíšete na závod.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Tlačítka -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success" {% if not soucasni_plavci %}disabled{% endif %}>
+                            <i class="bi bi-check-circle"></i> Zapsat Plavce na Závod
+                        </button>
+                        <a href="{% url 'profile' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Zpět
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    {% else %}
+        <div class="alert alert-info mt-4" role="alert">
+            <i class="bi bi-info-circle"></i> Momentálně nejsou k dispozici žádné budoucí závody.
+            <a href="{% url 'zavody_list' %}">Zobrazit všechny závody</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Data o disciplinách pro JavaScript -->
+<script>
+const zavodyData = {
+    {% for item in zavody_with_disciplines %}
+        {{ item.zavod.zavod_id }}: [
+            {% for dz in item.disciplines %}
+                {
+                    id: {{ dz.disciplina.disciplina_id }},
+                    name: '{{ dz.disciplina.nazev }}',
+                    style: '{{ dz.disciplina.styl }}',
+                    time: '{{ dz.zacatek|time:"H:i" }}'
+                }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]{% if not forloop.last %},{% endif %}
+    {% endfor %}
+};
+
+document.getElementById('zavod_id').addEventListener('change', function() {
+    const zavod_id = this.value;
+    const discipliny_container = document.getElementById('discipliny_container');
+    const discipliny_list = document.getElementById('discipliny_list');
+    
+    if (!zavod_id) {
+        discipliny_container.style.display = 'none';
+        return;
+    }
+    
+    const disciplines = zavodyData[zavod_id] || [];
+    
+    if (disciplines.length === 0) {
+        discipliny_container.style.display = 'none';
+        return;
+    }
+    
+    // Vyčistit seznam
+    discipliny_list.innerHTML = '';
+    
+    // Přidat checkboxy pro každou disciplinu
+    disciplines.forEach(disc => {
+        const col = document.createElement('div');
+        col.className = 'col-md-6 mb-3';
+        col.innerHTML = `
+            <div class="form-check card p-3" style="border: 1px solid var(--primary-color);">
+                <input class="form-check-input" type="checkbox" name="discipliny" 
+                       value="${disc.id}" id="disc_${disc.id}" checked>
+                <label class="form-check-label w-100" for="disc_${disc.id}">
+                    <strong>${disc.name}</strong>
+                    <br>
+                    <small class="text-muted">
+                        ${disc.style} | Čas: ${disc.time}
+                    </small>
+                </label>
+            </div>
+        `;
+        discipliny_list.appendChild(col);
+    });
+    
+    discipliny_container.style.display = 'block';
+});
+</script>
+{% endblock %}

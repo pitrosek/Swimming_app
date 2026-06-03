@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ trener.jmeno }} {{ trener.prijmeni }} - Plavecké Závody{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb with Button Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-house"></i> Domů
+            </a>
+            <span style="color: #666;">/</span>
+            <a href="{% url 'treneri_list' %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-person-lines-fill"></i> Trenéři
+            </a>
+            <span style="color: #666;">/</span>
+            <span style="padding: 0.5rem 0.75rem; color: #0066cc; font-weight: 600;">{{ trener.jmeno }} {{ trener.prijmeni }}</span>
+        </div>
+        <button onclick="history.back()" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
+            <i class="bi bi-arrow-left"></i> Zpět
+        </button>
+    </nav>
+
+    <!-- Detail Header -->
+    <div class="detail-header">
+        <h1><i class="bi bi-person-lines-fill"></i> {{ trener.jmeno }} {{ trener.prijmeni }}</h1>
+        <p class="mb-0">Profil trenéra</p>
+    </div>
+
+    <!-- Main Information -->
+    <div class="row mb-5">
+        <!-- Personal Info -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-info-circle"></i> Základní Informace
+                </div>
+                <div class="card-body">
+                    <div class="info-box mb-2">
+                        <strong><i class="bi bi-person"></i> Pohlaví:</strong><br>
+                        {% if trener.pohlavi == 'M' %}
+                            <span class="badge bg-primary"><i class="bi bi-person"></i> Muž</span>
+                        {% elif trener.pohlavi == 'Z' %}
+                            <span class="badge bg-danger"><i class="bi bi-person"></i> Žena</span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </div>
+                    {% if trener.klub %}
+                        <div class="info-box mb-2">
+                            <strong><i class="bi bi-building"></i> Klub:</strong><br>
+                            <a href="{% url 'klub_detail' trener.klub.klub_id %}" style="text-decoration: none;">
+                                <strong>{{ trener.klub.nazev }}</strong>
+                            </a>
+                        </div>
+                    {% endif %}
+                    {% if trener.stat %}
+                        <div class="info-box">
+                            <strong><i class="bi bi-globe"></i> Stát:</strong><br>
+                            <a href="{% url 'stat_detail' trener.stat.stat_id %}" style="text-decoration: none;">
+                                <strong>{{ trener.stat.nazev }}</strong>
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-bar-chart"></i> Statistika
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-12">
+                            <div class="number" style="color: var(--primary-color);">
+                                {{ plavci|length }}
+                            </div>
+                            <div class="label">
+                                <i class="bi bi-people"></i> Plavců pod vedením
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plavci pod vedením -->
+    {% if plavci %}
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-people"></i> Plavci pod Vedením Trenéra
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="bi bi-person"></i> Plavec</th>
+                                <th><i class="bi bi-calendar"></i> Ročník</th>
+                                <th><i class="bi bi-person"></i> Pohlaví</th>
+                                <th><i class="bi bi-building"></i> Klub</th>
+                                <th><i class="bi bi-globe"></i> Stát</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for plavec in plavci %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'plavec_detail' plavec.plavec_id %}" style="text-decoration: none;">
+                                            <strong>{{ plavec.jmeno }} {{ plavec.prijmeni }}</strong>
+                                        </a>
+                                    </td>
+                                    <td>{{ plavec.rocnik }}</td>
+                                    <td>
+                                        {% if plavec.pohlavi == 'M' %}
+                                            <span class="badge bg-primary">Muž</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Žena</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if plavec.klub %}
+                                            <a href="{% url 'klub_detail' plavec.klub.klub_id %}" style="text-decoration: none;">
+                                                {{ plavec.klub.nazev }}
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if plavec.stat %}
+                                            <a href="{% url 'stat_detail' plavec.stat.stat_id %}" style="text-decoration: none;">
+                                                {{ plavec.stat.nazev }}
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'plavec_detail' plavec.plavec_id %}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle"></i> Trenér zatím nemá žádné plavce pod vedením.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

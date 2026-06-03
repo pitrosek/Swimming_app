@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Můj Profil - Plavecké Závody{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb with Button Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-house"></i> Domů
+            </a>
+            <span style="color: #666;">/</span>
+            <span style="padding: 0.5rem 0.75rem; color: #0066cc; font-weight: 600;">Můj Profil</span>
+        </div>
+        <button onclick="history.back()" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
+            <i class="bi bi-arrow-left"></i> Zpět
+        </button>
+    </nav>
+
+    <!-- Detail Header -->
+    <div class="detail-header">
+        <h1><i class="bi bi-person-circle"></i> Můj Profil</h1>
+        <p class="mb-0">Informace o vašem účtu</p>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-person"></i> Osobní Údaje
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <strong><i class="bi bi-person-badge"></i> Uživatelské jméno:</strong><br>
+                                <span style="color: var(--primary-color); font-weight: 600;">{{ user.username }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <strong><i class="bi bi-envelope"></i> Email:</strong><br>
+                                <span style="color: var(--primary-color); font-weight: 600;">{{ user.email }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <strong><i class="bi bi-person"></i> Jméno:</strong><br>
+                                <span style="color: var(--primary-color); font-weight: 600;">
+                                    {{ user.first_name|default:"—" }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <strong><i class="bi bi-person"></i> Příjmení:</strong><br>
+                                <span style="color: var(--primary-color); font-weight: 600;">
+                                    {{ user.last_name|default:"—" }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <strong><i class="bi bi-calendar"></i> Účet vytvořen:</strong><br>
+                        {{ user.date_joined|date:"d.m.Y H:i" }}
+                    </div>
+
+                    <div class="info-box" style="margin-top: 15px; padding: 15px; background: linear-gradient(135deg, var(--light-color) 0%, rgba(0, 168, 232, 0.1) 100%); border-left: 4px solid var(--secondary-color);">
+                        <strong><i class="bi bi-tag"></i> Vaše Role:</strong><br>
+                        <span style="color: var(--secondary-color); font-weight: 600; font-size: 1.1em;">
+                            {% if user.profile.role == 'plavec' %}
+                                <i class="bi bi-person-swimming"></i> Plavec
+                            {% elif user.profile.role == 'trener' %}
+                                <i class="bi bi-person-raised-hand"></i> Trenér
+                            {% else %}
+                                —
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-gear"></i> Nastavení
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'home' %}" class="btn btn-secondary w-100 mb-2">
+                        <i class="bi bi-house"></i> Zpět na domovskou stránku
+                    </a>
+                    {% if user.profile.role == 'trener' %}
+                    <a href="{% url 'add_sverenek' %}" class="btn btn-info w-100 mb-2">
+                        <i class="bi bi-person-plus"></i> Moji Svěřenci
+                    </a>
+                    <a href="{% url 'zapsat_plavce_na_zavod' %}" class="btn btn-warning w-100 mb-2">
+                        <i class="bi bi-pencil-square"></i> Zapsat na Závody
+                    </a>
+                    <a href="{% url 'add_plavec_to_klub' %}" class="btn btn-success w-100 mb-2">
+                        <i class="bi bi-people"></i> Přidat Plavce do Klubu
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" class="btn btn-danger w-100">
+                        <i class="bi bi-box-arrow-right"></i> Odhlásit se
+                    </a>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <i class="bi bi-info-circle"></i> Informace
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted mb-0">
+                        <strong>Pro úpravu údajů</strong> se prosím obraťte na administrátora.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
